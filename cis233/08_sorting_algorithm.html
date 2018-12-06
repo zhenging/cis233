@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-reactroot=""><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/><head><title>08 Sorting Algorithm</title><link rel="stylesheet" href="/cis233/assets/katex.min_0.9.0.css"/><link rel="stylesheet" href="/cis233/assets/github-markdown_2.10.0.css"/><link rel="stylesheet" href="/cis233/assets/combined.css"/></head><body><header class="header"></header><main class="container"><div class="note-content"><article class="markdown-body"><h3>08 Sorting Algorithms</h3>
-<h4>Insertion</h4>
+<h4>Insertion Sort</h4>
 <h5>Procedures</h5>
 <ol>
 <li>Consider the first element to be sorted.</li>
@@ -55,6 +55,42 @@
 <li>Recursively sort the first and second  halves seperately</li>
 <li>Merge the two sorted halves into a sorted group. (Done in linear time)</li>
 </ol>
+<pre><code class="language-java">private void mergesort(int[] a, int[] tempArray, int left, int right) {
+  if (left &gt;= right) {
+    return;
+  }
+
+  int middle = (left + right) / 2;
+  mergesort(a, tempArray, left, middle);
+  mergesort(a, tempArray, middle + 1, right);
+  merge(a, tempArray, left, middle, right);
+}
+
+private void merge(int[] a, intaint left, int middle, int right) {
+  int i = left, j = middle + 1;
+  int k = i;
+  // main loop
+  while(i &lt;= middle &amp;&amp; j &lt;= right) {
+    if (a[i] &lt; a[j]) {
+      tempArray[k++] = a[i++];
+    } else {
+      tempArray[k++] = a[j++];
+    }
+  }
+  //copy rest of first half
+  while(i &lt;= middle) {
+    tempArray[k++] = a[i++];
+  }
+  //copy rest of second half
+  while(j &lt;= right) {
+    tempArray[k++] = a[j++];
+  }
+  // copy tempArray back
+  for (int n = left; n &lt;= right; n++) {
+    a[n] = tempArray[n];
+  }
+}
+</code></pre>
 <h5>Performance</h5>
 <p>Merge sort uses divide-and-conquer to obtain <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>N</mi><mi>lg</mi><mo>⁡</mo><mi>N</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(N\lg N)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mord rule" style="margin-right:0.16666666666666666em;"></span><span class="mop">l<span style="margin-right:0.01389em;">g</span></span><span class="mord rule" style="margin-right:0.16666666666666666em;"></span><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mclose">)</span></span></span></span> running. However, it requires extra memory to merge two sorted sub lists. The additional work involved in copying to the temporary array and back and that slows the sort</p>
 <h4>Quicksort</h4>
@@ -65,6 +101,42 @@
 <li>Partition <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>S</mi><mo>−</mo><mo>{</mo><mi>v</mi><mo>}</mo></mrow><annotation encoding="application/x-tex">S-\{v\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.05764em;">S</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mopen">{</span><span class="mord mathit" style="margin-right:0.03588em;">v</span><span class="mclose">}</span></span></span></span>(the remaining elements in S<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>S</mi></mrow><annotation encoding="application/x-tex">S</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.05764em;">S</span></span></span></span>) into two disjoint groups: <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>L</mi><mo>=</mo><mo>{</mo><mi>x</mi><mo>∈</mo><mi>S</mi><mo>−</mo><mo>{</mo><mi>v</mi><mo>}</mo><mi mathvariant="normal">∣</mi><mi>x</mi><mo>≤</mo><mi>v</mi><mo>}</mo></mrow><annotation encoding="application/x-tex">L = \{x\in S-\{v\} | x \le v\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base"><span class="mord mathit">L</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mopen">{</span><span class="mord mathit">x</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∈</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mord mathit" style="margin-right:0.05764em;">S</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mopen">{</span><span class="mord mathit" style="margin-right:0.03588em;">v</span><span class="mclose">}</span><span class="mord">∣</span><span class="mord mathit">x</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≤</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mord mathit" style="margin-right:0.03588em;">v</span><span class="mclose">}</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>R</mi><mo>=</mo><mo>{</mo><mi>x</mi><mo>∈</mo><mi>S</mi><mo>−</mo><mo>{</mo><mi>v</mi><mo>}</mo><mi mathvariant="normal">∣</mi><mi>x</mi><mo>≥</mo><mi>v</mi><mo>}</mo></mrow><annotation encoding="application/x-tex">R = \{x\in S-\{v\} | x \ge v\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mopen">{</span><span class="mord mathit">x</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∈</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mord mathit" style="margin-right:0.05764em;">S</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mopen">{</span><span class="mord mathit" style="margin-right:0.03588em;">v</span><span class="mclose">}</span><span class="mord">∣</span><span class="mord mathit">x</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≥</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mord mathit" style="margin-right:0.03588em;">v</span><span class="mclose">}</span></span></span></span></li>
 <li>Return the result of <em>Quicksort(L)</em> followed by <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>v</mi></mrow><annotation encoding="application/x-tex">v</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.03588em;">v</span></span></span></span> followed by <em>Quicksort(R)</em></li>
 </ol>
+<pre><code class="language-java">private void quicksort(int[] a, int low, int high) {
+  int middle = (low + high) / 2;
+
+  // pick a pivot using median-of-three
+  if (a[low] &gt; a[middle]) {
+    swap(a, low, middle);
+  }
+  if (a[middle] &gt; a[high]) {
+    swap(a, middle, high);
+  }
+  if (a[low] &gt; a[middle]) {
+    swap(a, low, middle);
+  }
+
+  // place pivot at position high -1
+  swap(a, middle, high - 1);
+
+  int pivot = a[high - 1];
+  int i, j;
+  for (i = low, j = high - 1; ;) {
+    while(a[++i] &lt; pivot) ;
+    while(a[--j] &gt; pivot) ;
+    if (i &gt;= j){
+      break;
+    }
+
+    swap(a, i, j);
+  }
+
+  // restore pivot
+  swap(a, i, hight - 1);
+  // recursively quick smaller group and large group
+  quicksort(a, low, i - 1);
+  quicksort(a, i + 1, high);
+}
+</code></pre>
 <h5>Performance</h5>
 <ul>
 <li>The best case occurs when the partition always splits into equal subsets. The running time is <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>N</mi><mi>lg</mi><mo>⁡</mo><mi>N</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(N \lg N)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mord rule" style="margin-right:0.16666666666666666em;"></span><span class="mop">l<span style="margin-right:0.01389em;">g</span></span><span class="mord rule" style="margin-right:0.16666666666666666em;"></span><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mclose">)</span></span></span></span>.</li>
@@ -78,8 +150,49 @@
 <li>Median-of-three. Attempt to pick a better than average pivot.</li>
 </ul>
 <h5>Partition Strategies</h5>
-<h5>Quickselect</h5>
+<p>To do</p>
+<h4>Quickselect</h4>
+<h5>Procedures</h5>
+<ol>
+<li>If the numbers of elements in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>S</mi></mrow><annotation encoding="application/x-tex">S</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.05764em;">S</span></span></span></span> is 1, presumably <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>k</mi></mrow><annotation encoding="application/x-tex">k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.69444em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.03148em;">k</span></span></span></span> is also 1, so we can return the single elements in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>S</mi></mrow><annotation encoding="application/x-tex">S</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.05764em;">S</span></span></span></span>.</li>
+<li>Pick any element <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>v</mi></mrow><annotation encoding="application/x-tex">v</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.03588em;">v</span></span></span></span> in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>S</mi></mrow><annotation encoding="application/x-tex">S</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.05764em;">S</span></span></span></span>. It is the pivot.</li>
+<li>Partition <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>S</mi><mo>−</mo><mo>{</mo><mi>v</mi><mo>}</mo></mrow><annotation encoding="application/x-tex">S-\{v\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.05764em;">S</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mopen">{</span><span class="mord mathit" style="margin-right:0.03588em;">v</span><span class="mclose">}</span></span></span></span> into <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>L</mi></mrow><annotation encoding="application/x-tex">L</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit">L</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>R</mi></mrow><annotation encoding="application/x-tex">R</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.00773em;">R</span></span></span></span>, exactly as was done for quicksort.</li>
+<li>If <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>k</mi></mrow><annotation encoding="application/x-tex">k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.69444em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.03148em;">k</span></span></span></span> is less than or equal to the number of elements in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>L</mi></mrow><annotation encoding="application/x-tex">L</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit">L</span></span></span></span>, the item we are searching for must be in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>L</mi></mrow><annotation encoding="application/x-tex">L</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit">L</span></span></span></span>. Call <em>Quickselect(L, k)</em> recursively. Otherwise, if <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>k</mi></mrow><annotation encoding="application/x-tex">k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.69444em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.03148em;">k</span></span></span></span> is exactly equal to 1 more than the number of items in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>L</mi></mrow><annotation encoding="application/x-tex">L</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit">L</span></span></span></span>, the pivot is the <em>k</em>th smallest element, and we can return it as the answer. Otherwise, the <em>k</em>th smallest element lies in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>R</mi></mrow><annotation encoding="application/x-tex">R</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.00773em;">R</span></span></span></span>, and it is the <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>k</mi><mo>−</mo><mi mathvariant="normal">∣</mi><mi>L</mi><mi mathvariant="normal">∣</mi><mo>−</mo><mn>1</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">(k-|L| - 1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base"><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mord">∣</span><span class="mord mathit">L</span><span class="mord">∣</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span>th smallest element in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>R</mi></mrow><annotation encoding="application/x-tex">R</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.00773em;">R</span></span></span></span>. Again, we can make a recursive call and return the result.</li>
+</ol>
+<pre><code class="language-java">private int quickselect(int[] a, int k) {
+  int quickselect(a, 0, k, a.length - 1);
+}
+
+private int quickselect(int[] a, int low, int high, int k) {
+  int pivot = a[left];
+  swap(a, left, right);
+
+  int i, j;
+  for (i = low, j = high - 1; ;) {
+    while(a[i++] &lt; pivot) ;
+    while(a[j--] &gt; pivot) ;
+    if (i &gt;= j) {
+      break;
+    }
+    swap(a, i, j);
+  }
+  swap(a, i, right);
+
+  if (k == i - low) {
+    return  i;
+  } else if (k &lt; i - low) {
+    return quickselect(a, low, k, i - 1);
+  } else {
+    return quickselect(a, i + 1, hight, k-i-1);
+  }
+}
+
+</code></pre>
+<h5>Performance</h5>
+<p><em>Quickselect</em> is similar to quicksort but makes only one recursive call. The average running time is linear.</p>
+<h4>Heapsort</h4>
+<p>See <a href="">21 Priority Queue</a></p>
 </article></div></main><footer class="note-footer"><div><p>Content written with attitude by @raven. <a href="../">Contact me</a><br />
 Page built with <a href="https://github.com/markdown-it/markdown-it">markdown-it</a>, <a href="https://khan.github.io/KaTeX/">Katex</a>, <a href="https://reactjs.org/">React</a> and <a href="https://webpack.js.org/">webpack</a>.<br />
-Updated at Dec 5, 2018 10:02 PM</p>
+Updated at Dec 6, 2018 12:19 AM</p>
 </div></footer></body></html>
