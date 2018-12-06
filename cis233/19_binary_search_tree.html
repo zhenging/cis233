@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" data-reactroot=""><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/><head><title>19 Binary Search Tree</title><link rel="stylesheet" href="/cis233/assets/katex.min_0.9.0.css"/><link rel="stylesheet" href="/cis233/assets/github-markdown_2.10.0.css"/><link rel="stylesheet" href="/cis233/assets/combined.css"/></head><body><header class="header"></header><main class="container"><div class="note-content"><article class="markdown-body"><h3>19 Binary Search Trees</h3>
+<h4>Binary search tree order property</h4>
+<p>In a binary search tree, for every node <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.07847em;">X</span></span></span></span>, all keys in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.07847em;">X</span></span></span></span>'s left subtree have smaller values than that key in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.07847em;">X</span></span></span></span>, and all keys in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.07847em;">X</span></span></span></span>'s right subtree have larger values than the key in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.07847em;">X</span></span></span></span>.</p>
+<h4>Operations</h4>
+<h5><code>find</code>, <code>findMin</code> and <code>findMax</code></h5>
+<p>We can perform a <code>find</code> operation by starting at the root and then repeatedly branching either left or right, depending on the result of a comparison. <code>findMin</code> and <code>findMax</code>. The <code>findMin</code> operation is performed by following left nodes as long as there is a left child. The <code>findMax</code> operation is similar.</p>
+<pre><code class="language-java">private BinaryNode&lt;AnyType&gt; find(AnyType x, BinaryNode&lt;AnyType&gt; t) {
+  while (t != null) {
+    if (x.compareTo(t.element) &lt; 0) {
+      t = t.left;
+    } else if (x.compareTo(t.element) &gt; 0) {
+      t = t.right;
+    } else {
+      return t; // Match
+    }
+  }
+  return null; // Not Found
+}
+
+// Internal method to find the smallest item in a subtree
+protected BinaryNode&lt;AnyType&gt; findMin(BinaryNode&lt;AnyType&gt; t) {
+  if (t != null) {
+    while (t.left != null) {
+      t = t.left;
+    }
+  }
+
+  return t;
+}
+
+// Internal method to find the largest item in a subtree
+protected BinaryNode&lt;AnyType&gt; findMax(BinaryNode&lt;AnyType&gt; t) {
+  if (t != null) {
+    while (t.right != null) {
+      t = t.right;
+    }
+  }
+
+  return t;
+}
+</code></pre>
+<p>1. Test against <code>null</code> must be performed first, otherwise, the access <code>t.element</code> would be illegal.<br />
+2. Because of call by values, the actual argument(root) is not changed. <code>t</code> is simply a <em>copy of root</em>.</p>
+<h5>Insertion</h5>
+<p>If the tree is empty, we can create a one-node tree, and return this newly created root node. If the tree is not empty, there are three possibilities. <em>First</em>, if the item to be inserted is smaller than the item in node <code>t</code>, we call <code>insert</code> recursively on the left subtree. <em>Second</em>, if the item is larger than the item in the node <code>t</code>, we call <code>insert</code> recursively on the right subtree. <code>Third</code>, if the item to insert matches the item in <code>t</code>, we throw  an exception.</p>
+<pre><code class="language-java">protected BinaryNode&lt;AnyType&gt; insert(AnyType x, BinaryNode&lt;AnyType&gt; t) {
+  if (t == null) {
+    return new BinaryNode&lt;AnyType&gt;(x);
+  } else if (x.compareTo(t.element) &lt; 0) {
+    t.left = insert(x, t.left);
+  } else if (x.compareTo(t.element) &gt; 0) {
+    t.right = insert(x, t.right);
+  } else {
+    throw new DuplicateItemException(x.toString()); // Duplicate
+  }
+
+  return t;
+}
+
+</code></pre>
+<h5>Deletion</h5>
+<p><code>remove</code>. It's difficult to <code>remove</code> because nonleaf nodes hold the tree together and we do not disconnect the tree. For a node having two children, the general strategy is to replace the item in this node with the smallest item in the right substree (which is easily found) and then remove that node (which is now logically empty). The second <code>remove</code> is easy to do because, the minimum node in a tree does not have a left child.</p>
+<h4>Analysis of BST operations</h4>
+<p>The cost of an operation is proportional to the depth of the last accessed node. The cost is <em>logarithmic</em> for a well-balanced tree, but it could be as bad as <em>linear</em> for a degenerate tree.</p>
+<h4>AVL Tree</h4>
+<p>An AVL Tree is a binary search tree with the additional balance property that, for any node in the tree, the height of the left and right subtrees can differ by at most 1. As usual, the height of an empty subtree is <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="base"><span class="mord">−</span><span class="mord">1</span></span></span></span>.</p>
+<p>An update in an AVL tree could destroy the balance. It must then be rebalanced before the operation can be considered complete.</p>
+<ol>
+<li>An insertion in the left subtree of the left child of X.</li>
+<li>An insertion in the left subtree of the right child of X.</li>
+<li>An insertion in the right subtree of the left child of X.</li>
+<li>An insertion in the right subtree of the right child of X.</li>
+</ol>
+<h5>Single Rotation</h5>
+<pre><code class="language-java">// case 1
+// Rotate binary tree node with left child
+static BinaryNode rotateWithLeftChild(BinaryNode k2) {
+  BinaryNode k1 = k2.left;
+  k2.left = k1.right;
+  k1.right = k2;
+  return k1;
+}
+
+// case 2
+// Rotate binary tree node with right child
+static BinaryNode rotateWithRightChild(BinaryNode k1) {
+  BinaryNode k2 = k1.right;
+  k1.right = k2.left;
+  k2.left = k1;
+  return k2;
+}
+</code></pre>
+<h5>Double Rotation</h5>
+<pre><code class="language-java">// case 3
+// Double rotate binary tree node: first left child with its right child, then // node k3 with its new left child.
+static BinaryNode doubleRotateWithLeftChild(BinaryNode k3) {
+  k3.left = rotateWithRightChild(k3.left);
+  return doubleRotateWithLeftChild(k3);
+}
+
+// case 4
+// Double rotate binary tree node: first right child with its left child. then
+// node k1 with its new right child
+static BinaryNode doubleRotateWithLeftChild(BinaryNode k1) {
+  k1.right = rotateWithLeftChild(k1.right);
+  return doubleRotateWithRightChild(k1);
+}
+</code></pre>
+<h4>AVL tree</h4>
+<h4>Red-black tree</h4>
+<h4>B-tree</h4>
+</article></div></main><footer class="note-footer"><div><p>Content written with attitude by @raven. <a href="../">Contact me</a><br />
+Page built with <a href="https://github.com/markdown-it/markdown-it">markdown-it</a>, <a href="https://khan.github.io/KaTeX/">Katex</a>, <a href="https://reactjs.org/">React</a> and <a href="https://webpack.js.org/">webpack</a>.<br />
+Updated at Dec 5, 2018 10:02 PM</p>
+</div></footer></body></html>

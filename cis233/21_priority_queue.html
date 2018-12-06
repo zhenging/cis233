@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-reactroot=""><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/><head><title>21 Priority Queue</title><link rel="stylesheet" href="/cis233/assets/katex.min_0.9.0.css"/><link rel="stylesheet" href="/cis233/assets/github-markdown_2.10.0.css"/><link rel="stylesheet" href="/cis233/assets/combined.css"/></head><body><header class="header"></header><main class="container"><div class="note-content"><article class="markdown-body"><h3>21 A Priority Queue: The Binary Heap</h3>
+<h4>Priority Queue</h4>
+<ul>
+<li>The priority queue supports access of <strong>the minimum item</strong> only.</li>
+<li>We want to be able to <strong>access</strong> the smallest item in a collection of items and <strong>remove</strong> it from the collection. (<code>findMin()</code> and <code>deleteMin()</code>).</li>
+<li>The binary heap implements the priority queue in <strong>logarithmic time</strong> per operation with litter extra space.</li>
+<li><code>heapsort</code> runs in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>N</mi><mi>log</mi><mo>⁡</mo><mi>N</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(N \log N)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mord rule" style="margin-right:0.16666666666666666em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mord rule" style="margin-right:0.16666666666666666em;"></span><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mclose">)</span></span></span></span> time but uses <strong>no extra memory</strong>.</li>
+</ul>
+<p>E.g.</p>
+<ul>
+<li>Printer jobs. (Several 1-page jobs and one 100-page job, it might be reasonable to print the long job last, even if it is not the last job submitted.)</li>
+<li>Multiuser environment. Operating system scheduler. (Short jobs that use fewer resources should have precedence over jobs that have already consumerd large amounts of resources).</li>
+<li>Event-driven simulation</li>
+</ul>
+<h4>Heap</h4>
+<ul>
+<li>The heap is a <em>complete binary tree</em>, allowing representation by a simple array (<em>implicit representation</em>) and guaranteeing logarithmic depth.</li>
+<li>Every node except the root has a parent. The <em>parent</em> is in position <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>⌊</mo><mi>i</mi><mi mathvariant="normal">/</mi><mn>2</mn><mo>⌋</mo></mrow><annotation encoding="application/x-tex">\lfloor i/2 \rfloor</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base"><span class="mopen">⌊</span><span class="mord mathit">i</span><span class="mord">/</span><span class="mord">2</span><span class="mclose">⌋</span></span></span></span>, the <em>left child</em> is in position <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>2</mn><mi>i</mi></mrow><annotation encoding="application/x-tex">2i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.65952em;"></span><span class="strut bottom" style="height:0.65952em;vertical-align:0em;"></span><span class="base"><span class="mord">2</span><span class="mord mathit">i</span></span></span></span>, and the <em>right child</em> is in position <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>2</mn><mi>i</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2i + 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.65952em;"></span><span class="strut bottom" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="base"><span class="mord">2</span><span class="mord mathit">i</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span></span></span></span>.</li>
+<li>In a heap, for every node <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.07847em;">X</span></span></span></span> with parent <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi></mrow><annotation encoding="application/x-tex">P</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.13889em;">P</span></span></span></span>, the key in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi></mrow><annotation encoding="application/x-tex">P</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.13889em;">P</span></span></span></span> is smaller than or equal to the key in <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.07847em;">X</span></span></span></span>.</li>
+<li>The root's parent in position <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.64444em;vertical-align:0em;"></span><span class="base"><span class="mord">0</span></span></span></span> is given a value of negative infinity.</li>
+</ul>
+<h4>Allowed Operations And Implementation</h4>
+<h5>Insertion</h5>
+<ul>
+<li>Insertion is implemented by creating a hole at the next available location adn then <strong>percolating it up</strong> util the new item can be placed in it without introducting a heap order violation with the hole's parent.</li>
+<li>The time required to do the insertion could be as much as <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>N</mi><mi>log</mi><mo>⁡</mo><mi>N</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(N \log N)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mord rule" style="margin-right:0.16666666666666666em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mord rule" style="margin-right:0.16666666666666666em;"></span><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mclose">)</span></span></span></span> if the element to be inserted is the new minimum. The reason is that it will percolate up all the way to the root. On average the percolation terminates early: It has been shown that <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>2</mn><mi mathvariant="normal">.</mi><mn>6</mn></mrow><annotation encoding="application/x-tex">2.6</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.64444em;vertical-align:0em;"></span><span class="base"><span class="mord">2</span><span class="mord">.</span><span class="mord">6</span></span></span></span> comparisons are required on average to perform the add, so the average add moves and element up <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn><mi mathvariant="normal">.</mi><mn>6</mn></mrow><annotation encoding="application/x-tex">1.6</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.64444em;vertical-align:0em;"></span><span class="base"><span class="mord">1</span><span class="mord">.</span><span class="mord">6</span></span></span></span> levels.</li>
+</ul>
+<pre><code class="language-java">public boolean add(AnyType x) {
+  if (currentSize + 1 == array.length) {
+    doubleArray();
+  }
+
+  // percolate up
+  int hole = ++currentSize;
+  array[0] = x;
+  for (; compare(x, array[hole / 2]) &lt; 0; hole /= 2) {
+    array[hole] = array[hole / 2];
+  }
+  array[hole] = x;
+
+  return true;
+}
+</code></pre>
+<h5>The <code>deleteMin</code> Operation</h5>
+<ul>
+<li>Deletion of the minimum involves placing former last item in a hold that is created at the root. The hole is <strong>percolated down</strong> through minimum children until the item can be placed without violating the heap-order property.</li>
+<li>The <code>deleteMin</code> operation is logarithmic in both the worst and average cases.</li>
+</ul>
+<pre><code class="language-java">public AnyType remove() {
+  AnyType minItem = element();
+  array[1] = array[currentSize --];
+  percolateDown(1);
+
+  return minItem;
+}
+
+private void percolateDown(int hole) {
+  int child;
+  AnyType tmp = array[hole];
+
+  for (; hole * 2 &lt;= currentSize; hole = child) {
+    child = hole * 2;
+
+    // find smaller one in left and right children
+    if (child != currentSize &amp;&amp; compare(array[child + 1], array[child]) &lt; 0) {
+      child++;
+    }
+    if (compare(array[child], temp) &lt; 0) {
+      // copy the smaller child up
+      array[hole] = array[child];
+    } else {
+      break;
+    }
+  }
+  array[hole] = temp;
+}
+</code></pre>
+<h5>The <code>buildHeap</code> Operation</h5>
+<ul>
+<li>The <code>buildHeap</code> operation can be done in <strong>linear time</strong> by applying a percolate down routine to nodes in reverse level order.</li>
+<li>A constructor that accepts a collection containing an initial set of items and calls <code>buildHeap()</code>. (One <code>buildHeap</code> is more efficient than doing <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi></mrow><annotation encoding="application/x-tex">N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.10903em;">N</span></span></span></span> insertions.) The N successive insertion do more work than we require because they maintain heap order after every insertion and we need heap order only at one instant.</li>
+</ul>
+<pre><code class="language-java">private void buildHeap() {
+  for (int i = currentSize / 2; i &gt; 0; i--) {
+    percolateDown(i);
+  }
+}
+</code></pre>
+<blockquote>
+<p><strong>Theorem 21.1</strong><br />
+For the perfect binary tree of height <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>H</mi></mrow><annotation encoding="application/x-tex">H</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.08125em;">H</span></span></span></span> containing <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi><mo>=</mo><msup><mn>2</mn><mrow><mi>H</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">N = 2^{H+1} - 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8413309999999999em;"></span><span class="strut bottom" style="height:0.924661em;vertical-align:-0.08333em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathit mtight" style="margin-right:0.08125em;">H</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span></span></span></span> nodes, the sum of the heights of the nodes is <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi><mo>−</mo><mi>H</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">N-H-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mord mathit" style="margin-right:0.08125em;">H</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span></span></span></span>.</p>
+</blockquote>
+<h5>Internal Sorting - Heapsort</h5>
+<ol>
+<li>Tossing each item into a binary heapsort (<em>Linear time</em>)</li>
+<li>Appliying buildHeap (<em>Linear time</em>)</li>
+<li>Calling <code>deleteMin</code> <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi></mrow><annotation encoding="application/x-tex">N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.10903em;">N</span></span></span></span> times, with the items exiting the heap in sorted order. (each call to <code>deleteMin</code> takes logarithmic time, so <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi></mrow><annotation encoding="application/x-tex">N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.10903em;">N</span></span></span></span> calls take <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>N</mi><mi>log</mi><mo>⁡</mo><mi>N</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(N \log N)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base"><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mord rule" style="margin-right:0.16666666666666666em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mord rule" style="margin-right:0.16666666666666666em;"></span><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mclose">)</span></span></span></span> time.)</li>
+</ol>
+<h6>Max Heap</h6>
+<p>For a typical increasing sorted order, we use a <strong>max heap</strong>, where the parent has a larger key than the child does.</p>
+<ol>
+<li>For consistency with other sorting algorithm, sentinel position (0) is no longer used, and the data starts in position 0.</li>
+</ol>
+<pre><code class="language-java">public void heapsort(int[] a){
+  // build heap
+  for (int i = a.length / 2;  i &gt; 0; i--) {
+    percolateDown(a, i, a.length);
+  }
+  // deleteMax
+  for (int i = a.length - 1; i &gt; 0; i--) {
+    swapReferences(a, 0, i);
+    percolateDown(a, 0, i);
+  }
+}
+
+private void percolateDown(int[] a, int i, int n) {
+  int child;
+  int temp;
+
+  //leftChild() returns 2*i +1
+  for (temp = a[i]; leftChild(i) &lt; n; i = child) {
+    child = leftChild(i);
+    if (child != n-1 &amp;&amp; a[child] &lt; a[child + 1]) {
+      child++;
+    }
+    if (temp &lt; a[child]) {
+      a[i] = a[child];
+    } else {
+      break;
+    }
+  }
+  a[i] = temp;
+}
+</code></pre>
+</article></div></main><footer class="note-footer"><div><p>Content written with attitude by @raven. <a href="../">Contact me</a><br />
+Page built with <a href="https://github.com/markdown-it/markdown-it">markdown-it</a>, <a href="https://khan.github.io/KaTeX/">Katex</a>, <a href="https://reactjs.org/">React</a> and <a href="https://webpack.js.org/">webpack</a>.<br />
+Updated at Dec 5, 2018 10:02 PM</p>
+</div></footer></body></html>
